@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+service MM {
+    rpc StreamPrices(stream Ccypair) returns (stream Book) {}
+
+    rpc StreamCommands(stream Status) returns (stream Command) {}
+
+    rpc PushExecutionReport(ExecutionReport) returns (Confirmation) {}
+
+    rpc GetConfig(Setup) returns (Config) {}
+
+    rpc StreamBook(stream Market) returns (stream Ccypair) {}
+
+    rpc PushBalance(stream Balance) returns (stream Balance) {}
+}
+// StreamPrices messages:
+message Ccypair {
+    string client = 1;
+    string ccypair = 2;
+    bool onoff = 3;
+}
+message Level {
+    int32 level = 1;
+    float bid = 2;
+    float ask = 3;
+    float addon = 4;
+    bool active = 5;
+}
+message Book {
+    string ccypair = 1;
+    double mid = 2;
+    int64 timestamp = 3;
+    double shift = 4;
+    double spread = 5;
+    repeated Level levels = 6;
+}
+// StreamCommands messages:
+message Status {
+    string client = 1;
+    string status = 2;
+    string message = 3;
+}
+message Command {
+    string command = 1;
+    string action = 2;
+    string item = 3;
+}
+// ExecutionReport messages
+enum OrderState {
+    UNDEFINED = 0;
+    OPEN = 1;
+    CLOSED = 2;
+    PENDING = 3;
+    BOOKED = 4;
+    FILLED = 5;
+    PARTIALLYFILLED = 6;
+}
+enum OrderType {
+    _UNDEFINED = 0;
+    FOK = 1; // fill or kill
+    IOC = 2; // Immediate or cancel
+    MASSQUOTE = 3;
+}
+enum Side {
+    __UNDEFINED = 0;
+    BUY = 1;
+    SELL = 2;
+}
+message ExecutionReport {
+    string id = 1;
+    OrderState state = 2;
+    string counterparty = 3;
+    string ccypair = 4;
+    Side side = 5;
+    double amount1 = 6;
+    double amount2 = 7;
+    double price = 8;
+    double fee = 9;
+    OrderType type = 10;
+    int64 epoche = 11;
+    string comment = 12;
+    bool autobook = 13;
+}
+message Confirmation {
+    uint32 id = 1;
+    OrderState state = 2;
+}
+// GetConfig messages:
+message Setup {
+    string name = 1;
+}
+message Config {
+    string name = 1;
+    repeated Limit limits = 2;
+}
+message Vol {
+    int32 level = 1;
+    float bid = 2;
+    float ask = 3;
+    bool active = 4;
+}
+message Limit {
+    string ccypair = 1;
+    float tickSize = 2;
+    float tickValue = 3;
+    float minOrderSize = 4;
+    uint32 id = 5;
+    float targetBalance = 6;
+    float balance = 7;
+    float targetCredit = 8;
+    float creditLine = 9;
+    repeated Vol volumes = 10;
+}
+// StreamBook
+message Market {
+    string client = 1;
+    string ccypair = 2;
+    repeated BookEntry bids = 3;
+    repeated BookEntry asks = 4;
+}
+message BookEntry {
+    string type = 1;
+    double price = 2;
+    double amount = 3;
+    double total = 4;
+}
+
+// PushBalance
+message Balance {
+    string name = 1;
+    repeated BalanceEntry balances = 2;
+}
+message BalanceEntry {
+    string ccy = 1;
+    double balance = 2;
+    double line = 3;
+    double target = 4;
+    double targetCredit = 5;
+}
