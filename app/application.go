@@ -1,15 +1,39 @@
 package app
 
-import "github.com/quickfixgo/quickfix"
+import (
+	"github.com/quickfixgo/quickfix"
+	"github.com/quickfixgo/quickfix/fix43/securitystatusrequest"
+	"github.com/quickfixgo/quickfix/fix44/businessmessagereject"
+	"github.com/quickfixgo/quickfix/fix44/marketdatarequest"
+	"github.com/quickfixgo/quickfix/fix44/massquote"
+	"github.com/quickfixgo/quickfix/fix44/newordersingle"
+	"github.com/quickfixgo/quickfix/fix44/ordercancelreplacerequest"
+	"github.com/quickfixgo/quickfix/fix44/ordercancelrequest"
+	"github.com/quickfixgo/quickfix/fix44/quotecancel"
+	"github.com/quickfixgo/quickfix/fix44/securitydefinitionrequest"
+	"quickFix/internal/adapter"
+)
 
 type Application struct {
 	*quickfix.MessageRouter
+	adapter.Adapter
 }
 
-func newApplication() *Application {
+func NewApplication(adp adapter.Adapter) *Application {
 	app := &Application{
 		MessageRouter: quickfix.NewMessageRouter(),
+		Adapter:       adp,
 	}
+
+	app.AddRoute(marketdatarequest.Route(app.onMarketDataRequest))
+	app.AddRoute(newordersingle.Route(app.onNewOrderSingle))
+	app.AddRoute(ordercancelrequest.Route())
+	app.AddRoute(ordercancelreplacerequest.Route())
+	app.AddRoute(massquote.Route())
+	app.AddRoute(quotecancel.Route())
+	app.AddRoute(businessmessagereject.Route())
+	app.AddRoute(securitystatusrequest.Route())
+	app.AddRoute(securitydefinitionrequest.Route())
 
 	return app
 }
@@ -39,4 +63,13 @@ func (a Application) FromAdmin(msg *quickfix.Message, sessionID quickfix.Session
 //FromApp implemented as part of Application interface, uses Router on incoming application messages
 func (a *Application) FromApp(msg *quickfix.Message, sessionID quickfix.SessionID) (reject quickfix.MessageRejectError) {
 	return a.Route(msg, sessionID)
+}
+
+func (a *Application) onMarketDataRequest(msg marketdatarequest.MarketDataRequest, sessionID quickfix.SessionID) (err quickfix.MessageRejectError) {
+	// TODO: Определяем тип сообщения
+	return
+}
+
+func (a *Application) onNewOrderSingle(msg newordersingle.NewOrderSingle, sessionID quickfix.SessionID) (err quickfix.MessageRejectError) {
+
 }
