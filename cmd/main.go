@@ -14,7 +14,7 @@ import (
 func main() {
 	flag.Parse()
 
-	cfgFileName := path.Join("config", "ordermatch.cfg")
+	cfgFileName := path.Join("config", "quickFix.cfg")
 	if flag.NArg() > 0 {
 		cfgFileName = flag.Arg(0)
 	}
@@ -33,8 +33,8 @@ func main() {
 
 	logFactory := quickfix.NewScreenLogFactory()
 
-	bitstamp := adapter.BitstampAdapter{}
-	application := app.NewApplication(&bitstamp)
+	bitstamp := adapter.NewBitstampAdapter()
+	application := app.NewApplication(bitstamp)
 
 	acceptor, err := quickfix.NewAcceptor(application, quickfix.NewMemoryStoreFactory(), appSettings, logFactory)
 	if err != nil {

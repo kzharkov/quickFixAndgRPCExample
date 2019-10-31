@@ -11,31 +11,33 @@ import (
 	"github.com/quickfixgo/quickfix/fix44/ordercancelrequest"
 	"github.com/quickfixgo/quickfix/fix44/quotecancel"
 	"github.com/quickfixgo/quickfix/fix44/securitydefinitionrequest"
+	app "quickFix/internal"
 	"quickFix/internal/adapter"
 )
 
 type Application struct {
 	*quickfix.MessageRouter
 	adapter.Adapter
+	server *app.Server
 }
 
 func NewApplication(adp adapter.Adapter) *Application {
-	app := &Application{
+	application := &Application{
 		MessageRouter: quickfix.NewMessageRouter(),
 		Adapter:       adp,
 	}
 
-	app.AddRoute(marketdatarequest.Route(app.onMarketDataRequest))
-	app.AddRoute(newordersingle.Route(app.onNewOrderSingle))
-	app.AddRoute(ordercancelrequest.Route())
-	app.AddRoute(ordercancelreplacerequest.Route())
-	app.AddRoute(massquote.Route())
-	app.AddRoute(quotecancel.Route())
-	app.AddRoute(businessmessagereject.Route())
-	app.AddRoute(securitystatusrequest.Route())
-	app.AddRoute(securitydefinitionrequest.Route())
+	application.AddRoute(marketdatarequest.Route(application.onMarketDataRequest))
+	application.AddRoute(newordersingle.Route(application.onNewOrderSingle))
+	application.AddRoute(ordercancelrequest.Route(application.onOrderCancelRequest))
+	application.AddRoute(ordercancelreplacerequest.Route(application.onOrderCancelReplaceRequest))
+	application.AddRoute(massquote.Route(application.onMassQuote))
+	application.AddRoute(quotecancel.Route(application.onQuoteCancel))
+	application.AddRoute(businessmessagereject.Route(application.onBusinessMessageReject))
+	application.AddRoute(securitystatusrequest.Route(application.onSecurityStatusRequest))
+	application.AddRoute(securitydefinitionrequest.Route(application.onSecurityDefinitionStatus))
 
-	return app
+	return application
 }
 
 //OnCreate implemented as part of Application interface
@@ -65,11 +67,38 @@ func (a *Application) FromApp(msg *quickfix.Message, sessionID quickfix.SessionI
 	return a.Route(msg, sessionID)
 }
 
-func (a *Application) onMarketDataRequest(msg marketdatarequest.MarketDataRequest, sessionID quickfix.SessionID) (err quickfix.MessageRejectError) {
-	// TODO: Определяем тип сообщения
-	return
+func (a *Application) onMarketDataRequest(msg marketdatarequest.MarketDataRequest, sessionID quickfix.SessionID) quickfix.MessageRejectError {
+	return nil
 }
 
-func (a *Application) onNewOrderSingle(msg newordersingle.NewOrderSingle, sessionID quickfix.SessionID) (err quickfix.MessageRejectError) {
+func (a *Application) onNewOrderSingle(msg newordersingle.NewOrderSingle, sessionID quickfix.SessionID) quickfix.MessageRejectError {
+	return nil
+}
 
+func (a *Application) onOrderCancelRequest(msg ordercancelrequest.OrderCancelRequest, sessionID quickfix.SessionID) quickfix.MessageRejectError {
+	return nil
+}
+
+func (a *Application) onOrderCancelReplaceRequest(msg ordercancelreplacerequest.OrderCancelReplaceRequest, sessionID quickfix.SessionID) quickfix.MessageRejectError {
+	return nil
+}
+
+func (a *Application) onMassQuote(msg massquote.MassQuote, sessionID quickfix.SessionID) quickfix.MessageRejectError {
+	return nil
+}
+
+func (a *Application) onQuoteCancel(msg quotecancel.QuoteCancel, sessionID quickfix.SessionID) quickfix.MessageRejectError {
+	return nil
+}
+
+func (a *Application) onBusinessMessageReject(msg businessmessagereject.BusinessMessageReject, sessionID quickfix.SessionID) quickfix.MessageRejectError {
+	return nil
+}
+
+func (a *Application) onSecurityStatusRequest(msg securitystatusrequest.SecurityStatusRequest, sessionID quickfix.SessionID) quickfix.MessageRejectError {
+	return nil
+}
+
+func (a *Application) onSecurityDefinitionStatus(msg securitydefinitionrequest.SecurityDefinitionRequest, sessionID quickfix.SessionID) quickfix.MessageRejectError {
+	return nil
 }
