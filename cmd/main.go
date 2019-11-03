@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"github.com/quickfixgo/quickfix"
@@ -8,6 +9,7 @@ import (
 	"os/signal"
 	"path"
 	"quickFix/app"
+	app2 "quickFix/internal"
 	"quickFix/internal/adapter"
 )
 
@@ -33,8 +35,8 @@ func main() {
 
 	logFactory := quickfix.NewScreenLogFactory()
 
-	bitstamp := adapter.NewBitstampAdapter()
-	application := app.NewApplication(bitstamp)
+	lmax := adapter.NewLmaxAdapter()
+	application := app.NewApplication(lmax)
 
 	acceptor, err := quickfix.NewAcceptor(application, quickfix.NewMemoryStoreFactory(), appSettings, logFactory)
 	if err != nil {

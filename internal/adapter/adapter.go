@@ -1,10 +1,13 @@
 package adapter
 
+import app "quickFix/internal"
+
 type Adapter interface {
-	StreamPriceAdapter()
+	StreamBookAdapter(market *app.Market) error
 	StreamCommandsAdapter()
 	PushExecutionReportAdapter()
 	GetConfigAdapter()
 	PushBalanceAdapter()
-	StreamBookAdapter()
+	SendMDR(command *app.Command) error
+	GetClient(string) (string, bool)
 }
