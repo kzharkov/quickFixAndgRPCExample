@@ -9,14 +9,18 @@ import (
 
 type LmaxAdapter struct {
 	fix          quickfix.Application
-	gRPC         app.SCgRPC
+	gRPC         *app.SCgRPC
 	sessionID    quickfix.SessionID
 	clients      map[string]string
-	mutexClients sync.RWMutex
+	mutexClients *sync.RWMutex
 }
 
-func NewLmaxAdapter() *LmaxAdapter {
-	return &LmaxAdapter{}
+func NewLmaxAdapter(gRPC *app.SCgRPC) *LmaxAdapter {
+	return &LmaxAdapter{
+		mutexClients: new(sync.RWMutex),
+		clients:      make(map[string]string),
+		gRPC:         gRPC,
+	}
 }
 
 func (b *LmaxAdapter) StreamBookAdapter(market *app.Market) error {
@@ -62,4 +66,8 @@ func (b *LmaxAdapter) GetClient(client string) (string, bool) {
 	defer b.mutexClients.RUnlock()
 	result, ok := b.clients[client]
 	return result, ok
+}
+
+func (b *LmaxAdapter) SetApplication(application quickfix.Application) {
+	b.fix = application
 }

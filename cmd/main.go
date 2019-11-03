@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"github.com/quickfixgo/quickfix"
@@ -35,8 +34,12 @@ func main() {
 
 	logFactory := quickfix.NewScreenLogFactory()
 
-	lmax := adapter.NewLmaxAdapter()
+	gRPC := app2.NewClientGRPC()
+
+	lmax := adapter.NewLmaxAdapter(gRPC)
 	application := app.NewApplication(lmax)
+
+	lmax.SetApplication(application)
 
 	acceptor, err := quickfix.NewAcceptor(application, quickfix.NewMemoryStoreFactory(), appSettings, logFactory)
 	if err != nil {
