@@ -17,6 +17,10 @@ import (
 	"quickFix/adapter"
 )
 
+/*
+В этом файле основная логика для FIX
+*/
+
 type Application struct {
 	*quickfix.MessageRouter
 	adapter.Adapter
