@@ -3,19 +3,18 @@ package adapter
 import (
 	"github.com/quickfixgo/quickfix"
 	"github.com/quickfixgo/quickfix/tag"
-	app "quickFix/internal"
 	"sync"
 )
 
 type LmaxAdapter struct {
 	fix          quickfix.Application
-	gRPC         *app.SCgRPC
+	gRPC         *SCgRPC
 	sessionID    quickfix.SessionID
 	clients      map[string]string
 	mutexClients *sync.RWMutex
 }
 
-func NewLmaxAdapter(gRPC *app.SCgRPC) *LmaxAdapter {
+func NewLmaxAdapter(gRPC *SCgRPC) *LmaxAdapter {
 	return &LmaxAdapter{
 		mutexClients: new(sync.RWMutex),
 		clients:      make(map[string]string),
@@ -23,7 +22,7 @@ func NewLmaxAdapter(gRPC *app.SCgRPC) *LmaxAdapter {
 	}
 }
 
-func (b *LmaxAdapter) StreamBookAdapter(market *app.Market) error {
+func (b *LmaxAdapter) StreamBookAdapter(market *Market) error {
 	return b.gRPC.SendBookMsg(market)
 }
 
@@ -43,7 +42,7 @@ func (b *LmaxAdapter) PushBalanceAdapter() {
 	panic("implement me")
 }
 
-func (b *LmaxAdapter) SendMDR(command *app.Command) error {
+func (b *LmaxAdapter) SendMDR(command *Command) error {
 	switch command.Command {
 	case "md":
 		if command.Action == "subscribe" {

@@ -1,14 +1,13 @@
-package app
+package adapter
 
 import (
 	"context"
-	"quickFix/internal/adapter"
 )
 
 type SCgRPC struct {
 	client  *mMClient
-	server  *mMStreamBookServer
-	adapter adapter.Adapter
+	server  *mMStreamBookClient
+	adapter Adapter
 }
 
 func NewClientGRPC() *SCgRPC {

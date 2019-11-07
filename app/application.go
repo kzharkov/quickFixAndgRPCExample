@@ -14,8 +14,7 @@ import (
 	"github.com/quickfixgo/quickfix/fix44/quotecancel"
 	"github.com/quickfixgo/quickfix/fix44/securitydefinitionrequest"
 	"github.com/quickfixgo/quickfix/tag"
-	app "quickFix/internal"
-	"quickFix/internal/adapter"
+	"quickFix/adapter"
 )
 
 type Application struct {
@@ -85,8 +84,8 @@ func (a *Application) onMarketDataRequest(msg marketdatarequest.MarketDataReques
 			return rejErr
 		}
 
-		var bids []*app.BookEntry
-		var asks []*app.BookEntry
+		var bids []*adapter.BookEntry
+		var asks []*adapter.BookEntry
 
 		var totalVolAsk float64
 		var totalVolBid float64
@@ -127,7 +126,7 @@ func (a *Application) onMarketDataRequest(msg marketdatarequest.MarketDataReques
 				}
 				lastPrice = mDEntryPx
 
-				bids = append(bids, &app.BookEntry{
+				bids = append(bids, &adapter.BookEntry{
 					Type:   "bid",
 					Price:  lastPrice,
 					Amount: volLst,
@@ -157,7 +156,7 @@ func (a *Application) onMarketDataRequest(msg marketdatarequest.MarketDataReques
 					continue
 				}
 
-				asks = append(asks, &app.BookEntry{
+				asks = append(asks, &adapter.BookEntry{
 					Type:   "ask",
 					Price:  mDEntryPx,
 					Amount: mDEntrySize,
@@ -167,7 +166,7 @@ func (a *Application) onMarketDataRequest(msg marketdatarequest.MarketDataReques
 		}
 
 		if lastPrice != 0 {
-			bids = append(bids, &app.BookEntry{
+			bids = append(bids, &adapter.BookEntry{
 				Type:   "bid",
 				Price:  lastPrice * (1 - 0.002),
 				Amount: volLst,
@@ -186,7 +185,7 @@ func (a *Application) onMarketDataRequest(msg marketdatarequest.MarketDataReques
 			return quickfix.NewMessageRejectError("Not get client", 0, &refTagID)
 		}
 
-		market := &app.Market{
+		market := &adapter.Market{
 			Ccypair: CCYPair,
 			Client:  client,
 			Asks:    asks,

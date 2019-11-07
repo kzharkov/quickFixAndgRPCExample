@@ -7,9 +7,8 @@ import (
 	"os"
 	"os/signal"
 	"path"
+	"quickFix/adapter"
 	"quickFix/app"
-	app2 "quickFix/internal"
-	"quickFix/internal/adapter"
 )
 
 func main() {
@@ -34,7 +33,7 @@ func main() {
 
 	logFactory := quickfix.NewScreenLogFactory()
 
-	gRPC := app2.NewClientGRPC()
+	gRPC := adapter.NewClientGRPC()
 
 	lmax := adapter.NewLmaxAdapter(gRPC)
 	application := app.NewApplication(lmax)
