@@ -4,12 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"github.com/quickfixgo/quickfix"
-	"log"
 	"os"
 	"os/signal"
 	"path"
 	"quickFix/adapter"
 	"quickFix/app"
+	"time"
 )
 
 func main() {
@@ -69,8 +69,9 @@ func main() {
 		Ассоциируем нашу объект application с lmax адаптером
 	*/
 	lmax.SetApplication(application)
+	appSettings.GlobalSettings().BoolSetting("Password")
 
-	acceptor, err := quickfix.NewAcceptor(application, quickfix.NewMemoryStoreFactory(), appSettings, logFactory)
+	acceptor, err := quickfix.NewInitiator(application, quickfix.NewMemoryStoreFactory(), appSettings, logFactory)
 	if err != nil {
 		fmt.Printf("Unable to create Acceptor: %s\n", err)
 		return
@@ -85,13 +86,13 @@ func main() {
 	/*
 		Запускаем наш хандлер
 	*/
-	go func() {
-		err := gRPC.DoStreamCommand()
-		if err != nil {
-			log.Println(err)
-		}
-	}()
-
+	//go func() {
+	//	err := gRPC.DoStreamCommand()
+	//	if err != nil {
+	//		log.Println(err)
+	//	}
+	//}()
+	time.Sleep(150 * time.Second)
 	interrupt := make(chan os.Signal)
 	signal.Notify(interrupt, os.Interrupt, os.Kill)
 	go func() {
