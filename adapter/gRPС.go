@@ -2,6 +2,7 @@ package adapter
 
 import (
 	"context"
+	"google.golang.org/grpc"
 )
 
 type SCgRPC struct {
@@ -10,8 +11,20 @@ type SCgRPC struct {
 	adapter Adapter
 }
 
-func NewClientGRPC() *SCgRPC {
-	return &SCgRPC{client: &mMClient{}}
+func NewClientGRPC(address string) (*SCgRPC, error) {
+	conn, err := grpc.Dial(address)
+	if err != nil {
+		return nil, err
+	}
+	_mMClient := &mMClient{conn}
+	streamBook, err := _mMClient.StreamBook(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return &SCgRPC{
+		client: _mMClient,
+		server: &mMStreamBookClient{streamBook},
+	}, nil
 }
 
 func (c *SCgRPC) DoStreamCommand() error {

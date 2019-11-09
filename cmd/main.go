@@ -9,10 +9,10 @@ import (
 	"path"
 	"quickFix/adapter"
 	"quickFix/app"
-	"time"
 )
 
 func main() {
+	address := flag.String("a", "127.0.0.1", "Address gRPC")
 	flag.Parse()
 
 	/*
@@ -51,7 +51,7 @@ func main() {
 	/*
 		Наш объект для gRPC
 	*/
-	gRPC := adapter.NewClientGRPC()
+	gRPC, err := adapter.NewClientGRPC(*address)
 
 	/*
 		Создаём объект lmax для интерфейса adapter
@@ -92,7 +92,6 @@ func main() {
 	//		log.Println(err)
 	//	}
 	//}()
-	time.Sleep(150 * time.Second)
 	interrupt := make(chan os.Signal)
 	signal.Notify(interrupt, os.Interrupt, os.Kill)
 	go func() {
@@ -100,4 +99,5 @@ func main() {
 		acceptor.Stop()
 		os.Exit(0)
 	}()
+	select {}
 }
