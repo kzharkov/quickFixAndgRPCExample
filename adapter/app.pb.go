@@ -1249,18 +1249,22 @@ type mMClient struct {
 	cc *grpc.ClientConn
 }
 
+func (c *mMClient) StreamPrices(ctx context.Context, opts ...grpc.CallOption) (MM_StreamPricesClient, error) {
+	panic("implement me")
+}
+
 func NewMMClient(cc *grpc.ClientConn) MMClient {
 	return &mMClient{cc}
 }
 
-func (c *mMClient) StreamPrices(ctx context.Context, opts ...grpc.CallOption) (MM_StreamPricesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_MM_serviceDesc.Streams[0], "/MM/StreamPrices", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &mMStreamPricesClient{stream}
-	return x, nil
-}
+//func (c *mMClient) StreamPrices(ctx context.Context, opts ...grpc.CallOption) (MM_StreamPricesClient, error) {
+//	stream, err := c.cc.NewStream(ctx, &_MM_serviceDesc.Streams[0], "/MM/StreamPrices", opts...)
+//	if err != nil {
+//		return nil, err
+//	}
+//	x := &mMStreamPricesClient{stream}
+//	return x, nil
+//}
 
 type MM_StreamPricesClient interface {
 	Send(*Ccypair) error

@@ -4,15 +4,17 @@ import (
 	"flag"
 	"fmt"
 	"github.com/quickfixgo/quickfix"
+	"log"
 	"os"
 	"os/signal"
 	"path"
 	"quickFix/adapter"
 	"quickFix/app"
+	"time"
 )
 
 func main() {
-	address := flag.String("a", "127.0.0.1", "Address gRPC")
+	address := flag.String("a", "127.0.0.1:5000", "Address gRPC")
 	flag.Parse()
 
 	/*
@@ -52,12 +54,15 @@ func main() {
 		Наш объект для gRPC
 	*/
 	gRPC, err := adapter.NewClientGRPC(*address)
-
+	if err != nil {
+		log.Println(err)
+	}
 	/*
 		Создаём объект lmax для интерфейса adapter
 	*/
 	lmax := adapter.NewLmaxAdapter(gRPC)
 
+	gRPC.SetAdapter(lmax)
 	/*
 		Структура app принимает только интерфейс Adapter,
 		а так как в структуре lmax имплементированы все функции Adapter,
@@ -86,12 +91,14 @@ func main() {
 	/*
 		Запускаем наш хандлер
 	*/
-	//go func() {
-	//	err := gRPC.DoStreamCommand()
-	//	if err != nil {
-	//		log.Println(err)
-	//	}
-	//}()
+
+	time.Sleep(time.Second*5)
+	go func() {
+		err := gRPC.DoStreamCommand()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 	interrupt := make(chan os.Signal)
 	signal.Notify(interrupt, os.Interrupt, os.Kill)
 	go func() {
